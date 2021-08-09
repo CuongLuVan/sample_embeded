@@ -1,0 +1,10 @@
+D:\Naivipi2\SourceCode\Example\bin\Debug\Example.exe
+D:\Naivipi2\SourceCode\Example\bin\Debug\Example.pdb
+D:\Naivipi2\SourceCode\Example\bin\Debug\ThreadMessaging.dll
+D:\Naivipi2\SourceCode\Example\bin\Debug\ThreadMessaging.pdb
+D:\Naivipi2\SourceCode\Example\obj\Debug\Example.csprojResolveAssemblyReference.cache
+D:\Naivipi2\SourceCode\Example\obj\Debug\Example.Form1.resources
+D:\Naivipi2\SourceCode\Example\obj\Debug\Example.Properties.Resources.resources
+D:\Naivipi2\SourceCode\Example\obj\Debug\Example.csproj.GenerateResource.Cache
+D:\Naivipi2\SourceCode\Example\obj\Debug\Example.exe
+D:\Naivipi2\SourceCode\Example\obj\Debug\Example.pdb

@@ -1,0 +1,45 @@
+
+#include <iostream>
+#include <mutex>
+#include <QtGlobal>
+
+
+class ProcessModel {
+public:
+
+    static ProcessModel *INSTANCEDATA;
+public:
+    ProcessModel();
+    ~ProcessModel();
+    static ProcessModel* getInstance() {
+        static ProcessModel *INSTANCEDATA;
+        if(INSTANCEDATA == NULL) {
+            INSTANCEDATA = new ProcessModel();
+        }
+        return INSTANCEDATA;
+    }
+    long sendTimeout(long timeout1);
+    long setTimeout_20ms(long timeout1);
+    void sendRequest(int lparam, int hparam, void * pointer, void *data);
+    void stopProcess(int lparam, int hparam, void * pointer, void *data);
+    void readStatusBldc(int lparam, int hparam, void * pointer, void *data);
+    void stopGas(int lparam, int hparam, void * pointer, void *data);
+    void processDataBldc(int lparam, int hparam, void * pointer, void *data);
+    void processDataSensor(int lparam, int hparam, void * pointer, void *data);
+    void processData(int lparam, int hparam, void * pointer, void *data);
+    void ProcessDataCommunicate(int lparam, int hparam, void * pointer, void *data);
+    void processDataAudio(int lparam, int hparam, void * pointer, void *data);
+    void processDataScreen(int lparam, int hparam, void * pointer, void *data);
+    int checkWarning(int lparam, int hparam, void * pointer, void *data);
+    void init_ProcessModel(int lparam,int hparam,void *head,void *content);
+    void checktypeData(int hparam,int lparam,void *head,void *content);
+    void timeout(int hparam,int lparam,void *head,void *content);
+    void setTimeout_20ms(int hparam,int lparam,void *head,void *content);
+    void processDataJoyStick(int lparam, int hparam, void * pointer, void *data);
+    void Process(int lparam, int hparam, void * pointer, void *data);
+    int check_sensor(int lparam, int hparam, void * pointer, void *data);
+    int check_joystick(int lparam, int hparam, void * pointer, void *data);
+    int check_bldc(int lparam, int hparam, void * pointer, void *data);
+};
+
+

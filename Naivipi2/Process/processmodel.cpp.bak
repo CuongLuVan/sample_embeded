@@ -1,0 +1,211 @@
+#include "define_thread.h"
+#include "processmodel.h"
+#include "debug.h"
+#include "structcommunicatedata.h"
+static DataJoyStick mdata_joystick;
+static DataBLDC mBldc_L;
+static DataBLDC mBldc_R;
+static DataBLDC check_warning_BLDC;
+static DataSensor Sensor;
+
+//#include "Define_Api.h"
+ProcessModel::ProcessModel() {
+
+}
+
+ProcessModel::~ProcessModel() {
+
+}
+
+ long  ProcessModel::sendTimeout(long timeout){
+     return 0;
+}
+
+ void ProcessModel::setTimeout_20ms(int lparam, int hparam, void * pointer, void *data){
+    Debug::getInstance()->debugdata("START timer20msCallBack");
+    //ProcessControl::getInstance()->sendTimeout20ms(lparam,lparam,pointer,data);
+    Debug::getInstance()->debugdata("END timer20msCallBack");
+ }
+ void ProcessModel::sendRequest(int lparam, int hparam, void * pointer, void *data) {
+
+ }
+ /*START Nguyen Dang Quang 22/08/2017*/
+ // sau khi phát hiện có wanning sẽ dừng dộng cơ sau đó phân loại wanning
+ void ProcessModel::Process(int lparam, int hparam, void * pointer, void *data){
+    int check;
+    int check_to_Restart;
+    check = checkWarning(lparam,hparam,pointer,data);
+    if(check==0){
+        stopProcess(lparam,hparam,pointer,data);
+        // hàm phân loại lỗi paste here =))
+    }
+    do{
+    check_sensor(check_to_Restart ,0, pointer,data);
+    check_bldc( check_to_Restart,0, pointer,data);
+    check_joystick( check_to_Restart,0, pointer,data);
+    }
+    while(check_to_Restart==1);
+
+     //if(lparam==VALUE_OK_INVALID){
+         if(hparam==FROM_COMMUNICATE_TASK){
+             if(FROM_JOYSTICK==true){
+                 processDataJoyStick( lparam,hparam, pointer,data);
+             }
+            else
+            if(FROM_SENSOR==true){
+                 processDataSensor( lparam,hparam, pointer,data);
+             }
+             else
+            if(FROM_BLDC==true){
+                 processDataBldc( lparam,hparam, pointer,data);
+            }
+         }
+        if(lparam==FROM_AUDIO_TASK){
+                processDataAudio( lparam,hparam, pointer,data);
+        }
+         if(lparam==FROM_SCREEN_TASK){
+                processDataScreen( lparam,hparam, pointer,data);
+        }
+    }
+
+
+ void ProcessModel::stopProcess(int lparam, int hparam, void * pointer, void *data) {
+        stopGas( lparam,  lparam, pointer, data);
+}
+ void ProcessModel::stopGas(int lparam, int hparam, void * pointer, void *data){
+     float gas;
+     gas = 0;
+ }
+ /*END Nguyen Dang Quang 22/08/2017*/
+ void ProcessModel::readStatusBldc(int lparam, int hparam, void * pointer, void *data) {
+
+ }
+ void ProcessModel::processDataBldc(int lparam, int hparam, void * pointer, void *data) {
+         int check;
+         check = checkWarning(lparam, hparam, pointer, data);
+         if (check ==1) {
+             processData( lparam,  hparam,  pointer, data);
+         }
+ }
+
+ void ProcessModel::processDataSensor(int lparam, int hparam, void * pointer, void *data){
+         int check;
+         check = checkWarning(lparam, hparam, pointer, data);
+         if (check == 1) {
+             processData(lparam, hparam, pointer, data);
+         }
+ }
+
+ /*
+ int checkMessage() {
+     int check;
+     return check;
+ }*/
+
+ void ProcessModel::processDataScreen(int lparam, int hparam, void * pointer, void *data) {
+     int check;
+     check = checkWarning(lparam, hparam, pointer, data);
+     if (check = 1) {
+         processData(lparam, hparam, pointer, data);
+     }
+     else{
+
+         /*START vu tri minh 20/08/2017*/
+     // process screen
+
+          // sent message to  screen
+          Debug::getInstance()->debugdata("Warning : sent message to  screen !");
+          }
+            /*END vu tri minh 20/08/2017*/
+
+ }
+
+ void ProcessModel::processDataAudio(int lparam, int hparam, void * pointer, void *data){
+     int check;
+     check = checkWarning(lparam, hparam, pointer, data);
+     if (check = 1) {
+         processData(lparam, hparam, pointer, data);
+     }
+     else{
+         /*START vu tri minh 20/08/2017*/
+       // process audio
+          // sent message to  audio
+          Debug::getInstance()->debugdata("Warning : sent message to  audio !");
+     }
+                /*END vu tri minh 20/08/2017*/
+
+ }
+
+ void ProcessModel::ProcessDataCommunicate(int lparam, int hparam, void * pointer, void *data){
+     int check;
+     check = checkWarning(lparam, hparam, pointer, data);
+     if (check = 1) {
+         processData(lparam, hparam, pointer, data);
+     }
+ }
+  void ProcessModel::processData(int lparam, int hparam, void * pointer, void *data) {
+      /*START luvan cuong 19/8/2017*/
+      if(mdata_joystick.warning == NO_WARNING){
+          if(Sensor.warning == NO_WARNING){
+             mBldc_L.vehicleControl = 20*mdata_joystick.y+14*mdata_joystick.x;
+             mBldc_R.vehicleControl = 20*mdata_joystick.y-14*mdata_joystick.x;
+          }
+      }
+    /*END luvan cuong 19/8/2017*/
+
+ }
+ void ProcessModel::processDataJoyStick(int lparam, int hparam, void * pointer, void *data) {
+     /*START luvan cuong 19/8/2017*/
+     if(lparam==VALUE_OK_INVALID){
+         DataJoyStick *datajoyStick=(DataJoyStick *) data;
+         if(datajoyStick->enable==false){
+            mdata_joystick.enable=false;
+         }
+         else
+         {
+              mdata_joystick.enable=true;
+              mdata_joystick.x = datajoyStick->x;
+              mdata_joystick.y = datajoyStick->y;
+              mdata_joystick.warning = datajoyStick->warning;
+         }
+     }
+     if(lparam==JOYSTICK_MECHANIC_COMMUNICATE_COMMAND_F1){
+        if(mdata_joystick.enable==false){
+             DataJoyStick *datajoyStick=(DataJoyStick *) data;
+             mdata_joystick.x = datajoyStick->x;
+             mdata_joystick.y = datajoyStick->y;
+        }
+     }
+     /*END luvan cuong 19/8/2017*/
+ }
+
+    /*START vu tri minh 20/08/2017*/
+ int ProcessModel::checkWarning(int lparam, int hparam, void * pointer, void *data)
+ {
+     int check;
+     if(mdata_joystick.warning == NO_WARNING &&
+        Sensor.warning == NO_WARNING &&
+        check_warning_BLDC.warning == NO_WARNING){
+         check = 1;
+     }
+     else{
+         check = 0;
+     }
+ }
+ /*START Nguyen Dang Quang 22/08/2017*/
+ int ProcessModel::check_sensor(int lparam, int hparam, void * pointer, void *data){
+     int check;
+     if(check==true)
+         return 1;
+ }
+ int ProcessModel::check_joystick(int lparam, int hparam, void * pointer, void *data){
+     int check;
+     if(check==true)
+         return 1;
+ }
+ int ProcessModel::check_bldc(int lparam, int hparam, void * pointer, void *data){
+     int check;
+     if(check==true)
+         return 1;
+ }
+ /*END Nguyen Dang Quang 22/08/2017*/
